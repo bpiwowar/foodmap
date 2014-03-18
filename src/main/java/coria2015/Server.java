@@ -12,5 +12,6 @@ public class Server {
     final static Logger LOGGER = Logger.getLogger("server");
 
     static int main(String [] args) {
+        return 0;
     }
 }
