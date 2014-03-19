@@ -1,6 +1,5 @@
 package coria2015;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalINIConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -30,6 +29,11 @@ public class FoodMapServer {
         int port = configuration.getInt("server.port", 8080);
         LOGGER.info(String.format("Starting server on port %d", port));
 
+        File imagePath = new File(configurationFile.getParentFile(), configuration.getString("recipes.images", "recipe-images"));
+        if (!imagePath.isDirectory()) {
+            throw new Exception(String.format("No path for images defined [%s not valid]", imagePath));
+        }
+
         // Create the server
         Server webServer = new Server();
 
@@ -48,7 +52,7 @@ public class FoodMapServer {
 
 
         // --- Add the default servlet
-        context.addServlet(new ServletHolder(new ContentServlet()), "/*");
+        context.addServlet(new ServletHolder(new ContentServlet(imagePath)), "/*");
 
 
         // --- start the server
@@ -60,6 +64,7 @@ public class FoodMapServer {
 
 
         LOGGER.info("Servers are stopped. Clean exit!");
+
     }
 
 }
