@@ -1,0 +1,17 @@
+
+/* Voir:http://css.mammouthland.net/css3/degrades-sans-image.php*/
+
+input#maxMinute.ui-slider {
+		width : 400px;	
+		background-image: -moz-linear-gradient(to left, rgba(255,252,12,1) 0%,rgba(255,141,0,1) 50%,rgba(255,18,0,1) 100%)
+		
+		}
+
+
+
+input#startHour.ui-slider {
+		width : 400px;	
+		background-image: linear-gradient(to right, rgba(0,4,127,1) 0%,rgba(68,182,255,1) 25%,rgba(68,182,255,1) 75%,rgba(0,2,64,1) 100%);
+		border-radius: 20px;
+}
+

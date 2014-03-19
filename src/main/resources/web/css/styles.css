@@ -1,0 +1,320 @@
+/*
+Couleurs du site de Tisseo
+ebebeb  -- gris très clair
+77879f -- très foncé
+4298b4 -- bleu
+f17c37 -- orange
+*/
+
+/**** balises HTML de base****/
+* { 
+	margin: 0; 
+	padding: 0;
+	outline: 0; 
+	color: #000000;
+	text-align:justify;
+    font-family:verdana, Tahoma, arial, sans-serif;
+    font-size:12px;
+	}
+
+
+
+
+body {
+    /*background-color:#ebebeb;*/
+    background-color:#1C1C1C;
+    margin: 15px 0;
+    padding:0;
+
+}
+
+
+
+h1, h2, h3, p {
+    margin: 10px 15px;
+    padding: 0;
+}
+
+h1 {
+    color:#FFFFFF ;
+    text-align: center; 
+    font-size:20pt ;
+}
+
+h2 {
+    color:#000000 ;
+    font-size:14pt ;
+}
+
+h3 {
+    color:#000000  ;
+    font-size:12pt ;
+}
+
+a {
+    text-decoration: none;
+    background: inherit;
+    color: #000000  ;
+}
+
+a:visited {
+    text-decoration: none;
+    background: inherit;
+    color: #000000  ;
+}
+
+
+a:hover {
+    text-decoration: underline;
+    background: inherit;
+    color: #000000 ;
+}
+
+
+
+/***** pour les div *****/
+
+/*Rectangle central: composé de header, menu + content-wrap*/
+#wrap {
+    width:1200px;    
+    margin:0 auto;
+    text-align:justify;
+}
+
+
+
+/*entete. Peut éventuellement contenir des div rightheader, titleheader et leftheader*/
+#header{
+   position: relative;
+    height:200px;
+   /* background: #77879f ; */
+    padding: 0; 
+    color: #fff;
+    width:1200px;
+    text-align: center;
+    background-image: url("../images/oranges.jpg");
+}
+
+#leftheader {
+   background-image: url("../images/logo_yellow_gray.jpg");
+   float:left;
+   width:250px;
+   height:131px;
+   font-size:14px
+}
+
+#titleheader {
+    padding: 0; 
+    height:131px;
+    margin-left: 250px;
+    line-height:131px;
+}
+
+#titleheader h1 {
+	vertical-align: middle;
+	line-height: 30px;
+	display: inline-block;
+}
+
+#rightheader {
+    padding: 0; 
+	width:200px;
+    height:131px;
+    float: left;
+}
+
+
+
+ /* menu*/
+#menu {
+    clear: both;    
+    margin: 0 auto; padding: 0;
+    background: #6E6E6E ;
+    font: bold 16px/40px "trebuchet MS", Arial, Tahoma, Sans-serif;
+    height: 100px;
+    width: 1200px;
+}
+
+#menu ul {
+    float: left;
+    list-style: none;
+    margin:0; padding: 0 0 0 40px;
+}
+
+#menu ul li {
+    display: inline;
+}
+
+#menu ul li a {
+    display: block;
+    float: left;
+    padding: 0 12px;
+    color: #FFFFFF; 
+    text-decoration: none;
+}
+#menu ul li a:hover {
+    color: #364142; 
+}
+#menu ul li#current a { 
+    color: #364142;
+}
+
+
+
+/* Contenu de la page : main + footer + éventuellement sidebar */
+#content-wrap {
+    clear: both;
+    width: 1200px;
+    margin: 0px auto;
+    padding: 0;     
+}
+
+/*Contenu*/
+/* Le main contient la carte. Width à adapter si on veut un menu à droite. */
+#main {
+    float: left;
+    width: 1200px;
+    margin: 0; 
+    padding: 0; 
+    display: inline;
+   background-color: #FFFFFF;
+}
+
+#debug {
+    float: left;
+    width: 1200px;
+    margin: 0; padding: 20px 0 0 0; 
+    display: inline;  
+    background-color: #FFFFFF;
+}
+
+#controls {
+    float: left;
+    width: 1200px;
+    margin: 0; padding: 20px 0 0 0; 
+    display: inline; 
+    background-color: #FFFFFF;
+    border:2px solid #4298b4;
+    
+}
+
+
+.imgPopup{
+	width: 70px;
+	height: 70px;
+}
+
+
+#main p, #main h1, #main h2, #main h3, #main ol, #main ul, #main table, #main form {
+    margin-left: 10px;
+    margin-right: 10px;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+#main ol, #main ul{
+    margin-left: 30px;
+    margin-right: 30px;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+#myMap {
+	width:1200px;
+	height:700px;
+	position:relative;
+	/*border:2px solid #f17c37;*/
+}
+
+/* pour les légendes */
+.info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.legend {
+    line-height: 18px;
+    color: #555;
+}
+.legend i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+
+
+
+
+ /* Pour créer éventuellement un contenu sur la droite */
+ /*
+#sidebar {
+    float: right;
+    width: 195px;
+    padding: 0; margin: 10px 0 0 0; 
+    color: #777;    
+}
+
+
+#sidebar p {
+    margin-left: 5px;
+}
+
+#sidebar ul.sidemenu {
+    list-style: none;
+    text-align: left;
+    margin: 7px 10px 8px 0; padding: 0;
+    text-decoration: none;  
+    border-top: 1px solid #A9D4EF;  
+}
+
+#sidebar ul.sidemenu li {
+    list-style: none;
+    padding: 4px 0 4px 5px;
+    margin: 0 2px;  
+    color: #777;    
+    border-bottom: 1px solid #D2E8F7; 
+}
+
+* html body #sidebar ul.sidemenu li {
+    height: 1%;
+}
+
+#sidebar ul.sidemenu li a {
+    text-decoration: none;  
+    color: #1773BC;             
+}
+
+#sidebar ul.sidemenu li a:hover {   
+    color: #333;
+}
+
+#sidebar ul.sidemenu ul { margin: 0 0 0 5px; padding: 0; }
+#sidebar ul.sidemenu ul li { border: none; }
+  */
+
+/* pied*/
+#footer {
+    color: #FFFF;
+    background: black ;
+    clear: both;
+    width:1200px;
+    height: 60px;
+    text-align: center; 
+    font-size: 90%; 
+}
+#footer p { 
+    padding: 10px 0;
+    margin: 0;
+    text-align: center;
+}
+#footer a { 
+    color: #fff;
+    text-decoration: none;  
+}
+
