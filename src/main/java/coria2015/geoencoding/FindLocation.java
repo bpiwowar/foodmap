@@ -19,6 +19,7 @@ public class FindLocation {
         String wiki="../data/wikititles/index.dat";
         HashMap<String,WikiFile> index = new HashMap<String, WikiFile>();
 
+        //Int2ObjectOpenHashMap<WikiFile>
         InputStream isr;
 
 
@@ -48,6 +49,8 @@ public class FindLocation {
         String inFile ="files/ingredients_matched";
 
         InputStream isr2;
+
+        GeoNamesFinder gn = new GeoNamesFinder();
 
         try {
             isr2 = new FileInputStream(inFile);
@@ -97,7 +100,7 @@ public class FindLocation {
                 String stringToParse= new String(bytes);
 
 
-                GeoNamesFinder gn = new GeoNamesFinder(stringToParse);
+                gn.setString(stringToParse);
 
 
                 HashSet<String> hs = gn.getGeoNames();
@@ -106,7 +109,7 @@ public class FindLocation {
                     output.write(loc + "\t");
                 }
                 output.write("\n");
-
+                output.flush();
 
 
 

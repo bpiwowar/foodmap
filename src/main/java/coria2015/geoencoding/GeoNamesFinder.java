@@ -16,28 +16,35 @@ import java.util.*;
 public class GeoNamesFinder {
 
     private String text;
+    private AbstractSequenceClassifier classifier;
 
-    GeoNamesFinder(String text){
-        this.text=text;
+    GeoNamesFinder(){
+        String serializedClassifier = "files/classifiers/english.all.3class.distsim.crf.ser.gz";
+
+        classifier = CRFClassifier.getClassifierNoExceptions(serializedClassifier);
     }
 
+    public void setString (String text){
+        this.text=text;
+    }
     public HashSet<String> getGeoNames() throws IOException {
 
        HashSet<String> location= new HashSet();
 
-        String serializedClassifier = "files/classifiers/english.all.3class.distsim.crf.ser.gz";
 
 
-        AbstractSequenceClassifier classifier = CRFClassifier.getClassifierNoExceptions(serializedClassifier);
+
 
         String[] tags= (classifier.classifyToString(text)).split(" ");
 
         for (String tag:tags){
             //System.out.println("Tag: "+tag);
             String loc[]= tag.split("/");
+            if (loc.length>1){
             //System.out.println(loc[0]+"-"+loc[1]);
             if (loc[1].contains("LOCATION")){
                 location.add(loc[0]);
+            }
             }
         }
 

@@ -41,8 +41,8 @@ public class TestGeoNamesFinder {
                 "Various terms, such as copra and coir, are derived from the native Malayalam language. In Kerala, the coconut tree is called \"Thengu\" also termed as kalpa vriksham, which essentially means all parts of a coconut tree is useful some way or other.";
 
         try{
-            GeoNamesFinder gn = new GeoNamesFinder(test);
-
+            GeoNamesFinder gn = new GeoNamesFinder();
+            gn.setString(test);
             HashSet<String> hs = gn.getGeoNames();
 
             for (String loc:hs){
