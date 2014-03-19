@@ -33,6 +33,8 @@ import java.io.*;
 import java.net.URL;
 
 import static java.lang.String.format;
+
+import java.net.URLDecoder;
 import java.util.logging.Logger;
 
 public class ContentServlet extends AbstractServlet {
@@ -68,7 +70,10 @@ public class ContentServlet extends AbstractServlet {
          final URL url;
         IMAGE_URI = "/recipe/image/";
         if (request.getRequestURI().startsWith(IMAGE_URI)) {
-            String recipeName = request.getRequestURI().substring(IMAGE_URI.length()).replace(" ", "-");
+
+            String recipeName =
+                    URLDecoder.decode(request.getRequestURI().substring(IMAGE_URI.length()), "UTF-8")
+                    .replace(" ", "-");
             String name = recipeImages.get(recipeName);
             File file = new File(imagePath, name);
             url = file.toURI().toURL();
