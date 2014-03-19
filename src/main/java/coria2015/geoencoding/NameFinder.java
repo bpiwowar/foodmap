@@ -71,17 +71,18 @@ public class NameFinder {
         LOGGER.info("Reading full file");
         while ((line = recipes.readLine()) != null) {
             String[] fields = line.split("\t");
+            final String name = fields[0];
             if (!sqlMode) {
-                System.out.print(fields[0]);
+                System.out.print(name);
             }
             for(int i = 1; i < fields.length; i++) {
-                String name = fields[i].toLowerCase();
-                ArrayList<Place> places = placesByName.get(name);
+                String namePlace = fields[i].toLowerCase();
+                ArrayList<Place> places = placesByName.get(namePlace);
                 if (places != null)
                     for(Place place: places) {
                         if (sqlMode) {
-                            System.out.format("INSERT INTO ____ VALUES('%s', POINT(%f,%f));\n", fields[0],
-                                    place.lattitude, place.longitude);
+                            System.out.format("INSERT INTO Geo VALUES('%s', POINT(%f,%f));\n",
+                                    name.replace("'", "''"), place.lattitude, place.longitude);
 
                         } else {
                             System.out.format("\t%s", place);

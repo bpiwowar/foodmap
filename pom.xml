@@ -55,6 +55,12 @@
             <artifactId>argj</artifactId>
             <version>1.1.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>edu.stanford.nlp</groupId>
+            <artifactId>stanford-corenlp</artifactId>
+            <version>3.3.1</version>
+        </dependency>
     </dependencies>
 
     <properties>
