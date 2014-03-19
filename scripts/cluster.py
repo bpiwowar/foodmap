@@ -4,10 +4,11 @@ import argparse
 import logging
 import random
 
-from math import radians, sqrt, sin, cos, atan2, pi
+from math import radians, sqrt, sin, cos, atan2, pi, degrees
 
 # https://gist.github.com/amites/3718961
 import sys
+import math
 
 
 def center_geolocation(geolocations):
@@ -61,7 +62,7 @@ parser.add_argument("located_ingredients", help="List of ingredients + tab sep. 
 args = parser.parse_args()
 
 K = 30
-MIN_SUPPORT = 0.02
+MIN_SUPPORT = 0.1
 MAX_STEPS = 50
 CHANGE_THRESHOLD=.05
 
@@ -86,8 +87,11 @@ codes_2 = {
 count = 0
 for line in open(args.located_ingredients):
     fields = line.strip().split("\t")
+    if len(fields) < 2:
+        continue
     ingredient = fields[0]
     locations = []
+
 
     # Process and convert degrees to
     for coordinates in fields[1:]:
@@ -95,7 +99,8 @@ for line in open(args.located_ingredients):
         lat, long = radians(float(lat)), radians(float(long))
         locations.append((lat, long))
 
-    nb_clusters = min(K, len(coordinates))
+    nb_clusters = math.trunc(min(K, len(coordinates), float(len(coordinates)/MIN_SUPPORT)))
+
     clusters = [random.randint(0, nb_clusters-1) for i in range(len(locations))]
 
     for step in range(MAX_STEPS):
@@ -148,7 +153,9 @@ for line in open(args.located_ingredients):
         center = centers[k]
         if center is not None:
             if counts[k] / float(len(locations)) >= MIN_SUPPORT:
-                print("INSERT INTO Geo VALUES('%s', POINT(%f, %f));" % (ingredient.replace("'", "''"), center[1], center[0]))
+                print("INSERT INTO Geo VALUES('%s', POINT(%f, %f));" % (ingredient.replace("'", "''"),
+                                                                        degrees(center[1]),
+                                                                        degrees(center[0])))
 
     count += 1
     if count % 100 == 0:
