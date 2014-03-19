@@ -1,5 +1,9 @@
 package coria2015.geoencoding;
 
+import bpiwowar.argparser.ArgParser;
+import bpiwowar.argparser.ArgParserException;
+import bpiwowar.argparser.Argument;
+import bpiwowar.argparser.OrderedArgument;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -16,28 +20,24 @@ import java.util.zip.GZIPInputStream;
 public class NameFinder {
     static private final Logger LOGGER = Logger.getLogger("NameFinder");
 
-    static public void main(String [] args) throws IOException {
-        File alternates = new File(args[1]);
-        File full = new File(args[0]);
+    @Argument(name="sql")
+    boolean sqlMode = false;
 
-        BufferedReader recipes = new BufferedReader(new FileReader(args[2]));
-        NameFinder nameFinder = new NameFinder(full, alternates);
+    @OrderedArgument(required = true)
+    File full = null;
 
-        String line;
-        int count = 0;
-        LOGGER.info("Reading full file");
-        while ((line = recipes.readLine()) != null) {
-            String[] fields = line.split("\t");
-            System.out.print(fields[0]);
-            for(int i = 1; i < fields.length; i++) {
-                ArrayList<Place> places = nameFinder.placesByName.get(fields[i]);
-                for(Place place: places) {
-                    System.out.format("\t%s", place);
-                }
-            }
-            System.out.println();
-        }
+    @OrderedArgument(required = true)
+    File alternates = null;
 
+    @OrderedArgument(required = true)
+    File recipesFile = null;
+
+    static public void main(String [] args) throws IOException, ArgParserException {
+        ArgParser parser = new ArgParser("namefinder");
+        NameFinder nameFinder = new NameFinder();
+        parser.addOptions(nameFinder);
+        parser.matchAllArgs(args);
+        nameFinder.process();
     }
 
     static public class Place {
@@ -61,9 +61,40 @@ public class NameFinder {
         }
     }
 
+
+    public void process() throws IOException {
+        readPlaces();
+
+        BufferedReader recipes = new BufferedReader(new FileReader(recipesFile));
+
+        String line;
+        LOGGER.info("Reading full file");
+        while ((line = recipes.readLine()) != null) {
+            String[] fields = line.split("\t");
+            if (!sqlMode) {
+                System.out.print(fields[0]);
+            }
+            for(int i = 1; i < fields.length; i++) {
+                String name = fields[i].toLowerCase();
+                ArrayList<Place> places = placesByName.get(name);
+                if (places != null)
+                    for(Place place: places) {
+                        if (sqlMode) {
+                            System.out.format("INSERT INTO ____ VALUES('%s', POINT(%f,%f));\n", fields[0],
+                                    place.lattitude, place.longitude);
+
+                        } else {
+                            System.out.format("\t%s", place);
+                        }
+                    }
+            }
+            System.out.println();
+        }
+
+    }
     Object2ObjectOpenHashMap<String, ArrayList<Place>> placesByName = new Object2ObjectOpenHashMap<>();
 
-    public NameFinder(File full, File alternates) throws IOException {
+    public void readPlaces() throws IOException {
         Int2ObjectOpenHashMap<Place> placesById = new Int2ObjectOpenHashMap<>();
 
         /*
@@ -97,21 +128,21 @@ public class NameFinder {
         while ((line = fullReader.readLine()) != null) {
             String[] fields = line.split("\\t");
             switch(fields[6]) {
-            case "A":
-            case "P":
-            case "L":
-            case "V":
-                int id = Integer.parseInt(fields[0]);
-                String name = fields[1];
-                Place place = new Place(name, Float.parseFloat(fields[4]), Float.parseFloat(fields[5]), fields[6], fields[7]);
-                placesById.put(id, place);
-                ArrayList<Place> places = placesByName.get(name);
-                if (places == null) {
-                    places = new ArrayList<Place>();
-                    placesByName.put(name, places);
-                }
-                places.add(place);
-                totalCount++;
+                case "A":
+                case "P":
+                case "L":
+                case "V":
+                    int id = Integer.parseInt(fields[0]);
+                    String name = fields[1].toLowerCase();
+                    Place place = new Place(name, Float.parseFloat(fields[4]), Float.parseFloat(fields[5]), fields[6], fields[7]);
+                    placesById.put(id, place);
+                    ArrayList<Place> places = placesByName.get(name);
+                    if (places == null) {
+                        places = new ArrayList<>();
+                        placesByName.put(name, places);
+                    }
+                    places.add(place);
+                    totalCount++;
             }
             if (++count % 100000 == 0) {
                 LOGGER.info(String.format("Read %d entries [%d added]", count, totalCount));
@@ -138,6 +169,8 @@ public class NameFinder {
             if (fields[2].equals("en") || fields[2].equals("")) {
                 int geoid =  Integer.parseInt(fields[1]);
                 String alternateName = fields[3];
+                if (alternateName != null)
+                    alternateName = alternateName.toLowerCase();
                 Place place = placesById.get(geoid);
 
                 if (alternateName != null || !alternateName.equals(place.name)) {
@@ -154,7 +187,7 @@ public class NameFinder {
                 }
             }
             if (++altCount % 100000 == 0) {
-                LOGGER.info(String.format("Read %d entries [%d added]", altCount, altTotalCount));
+                LOGGER.info(String.format("Read %d altenate entries [%d added]", altCount, altTotalCount));
             }
         }
     }
