@@ -8,6 +8,8 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.ThreadPool;
 
+import coria2015.server.*;
+
 import java.io.File;
 import java.util.logging.Logger;
 
@@ -17,7 +19,7 @@ import java.util.logging.Logger;
 public class FoodMapServer {
     final static Logger LOGGER = Logger.getLogger("server");
 
-    public static int main(String [] args) throws Exception {
+    public static void main(String [] args) throws Exception {
         File configurationFile = new File(args[0]);
         LOGGER.info("Reading configuration from " + configurationFile);
 
@@ -58,8 +60,6 @@ public class FoodMapServer {
 
 
         LOGGER.info("Servers are stopped. Clean exit!");
-
-        return 0;
     }
 
 }
