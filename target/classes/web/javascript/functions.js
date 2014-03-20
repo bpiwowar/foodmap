@@ -22,7 +22,8 @@ var jsonData;
 
 
 var roundIcon;
-
+var roundIconHere;
+var markerHere;
 
 function init(){
 	
@@ -50,7 +51,10 @@ function init(){
 	distMax = 100000000000;
 	
 	roundIcon = L.icon({	
-		iconUrl: '../images/icon.png'});	
+		iconUrl: '../images/icon.png'});
+	
+	roundIconHere = L.icon({	
+		iconUrl: '../images/iconHere.png'});
 }
 
 
@@ -91,11 +95,25 @@ function onMapClick(e) {
 		lat1 = e.latlng.lat;
 		long1 = e.latlng.lng;
 		
+		
+
+		
+		
+		/*
+		var popup = L.popup()
+			 .setLatLng([lat1, long1])
+			 .setContent("I am here.")
+			 .openOn(map);
+		*/
+		
 		sendCoordinates();
+		
+		
+
 		
 		/*Le process pour generer les bons JSON*/
 		
-		displayMarker();
+		//displayMarker();
 
 				    
 
@@ -105,6 +123,26 @@ function onMapClick(e) {
 
 
 function displayMarker(){
+	
+
+	for (var i = 0  ; i < jsonData.length ; i++){
+		//console.log(data[i]);
+					
+		//console.log(data[i].distance+"<="+distMax)
+					
+		if (jsonData[i].distance <= distMax) {
+						
+			var marker = L.marker([jsonData[i].lat, jsonData[i].lng],{icon: roundIcon});
+			map.addLayer(marker);
+			markers[marker._leaflet_id] = marker;
+			markers[marker._leaflet_id].bindPopup("<b>"+jsonData[i].label+"</b><div><img class='imgPopup' src='"+jsonData[i].img+"'></div>");
+						
+		}
+	}
+	
+	
+	
+		/*
 		$.ajax({
 			url: "json/map.json",
 			dataType: "json",
@@ -130,6 +168,7 @@ function displayMarker(){
 
 			}
 		});
+		*/
 
 }
 
@@ -137,11 +176,46 @@ function displayMarker(){
 	$.jsonRPC.request('getCoordinates', {
           params: { "lat": lat1, "long": long1},
           success: function(r) {
-              //console.log("Succés de l'envoi des coordonnées");
-	      console.log(r);
+              console.log("Affichage");
+	      
+	      
+	      for (var i in markers){
+		console.log(i);
+		map.removeLayer(markers[i]);
+	      }
+	      
+	     // markers = new Array();
+	      
+	      jsonData = JSON.parse(r.result);
+	      console.log(jsonData[0]);
+	      
+	      	for (var i = 0  ; i < jsonData.length ; i++){
+		//console.log(data[i]);
+					
+		//console.log(data[i].distance+"<="+distMax)
+					
+			if (jsonData[i].distance <= distMax) {
+				
+				//console.log(jsonData[i]);		
+				var marker = L.marker([jsonData[i].lat, jsonData[i].lng],{icon: roundIcon});
+				map.addLayer(marker);
+				markers[i] = marker;
+				markers[i].bindPopup("<div class='titleBullet'>"+jsonData[i].label+"</div>Distance: "+jsonData[i].distance+"<div><img class='imgPopup' src='/recipe/image/"+jsonData[i].label+"'></div>");
+						
+			}
+		}
+	      
+	        markerHere = L.marker([lat1, long1],{icon: roundIconHere});
+		map.addLayer(markerHere);
+		markers[markerHere._leaflet_id] = markerHere;
+	      
+	      
+	      
           },
           error: function(error)  { console.log('There was an error', error); }
       });
+	
+	
 };
 
 
