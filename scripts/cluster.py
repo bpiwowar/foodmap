@@ -2,10 +2,15 @@
 
 import argparse
 import logging
+import random
 
-from math import radians, sqrt, sin, cos, atan2, pi
+from math import radians, sqrt, sin, cos, atan2, pi, degrees
 
 # https://gist.github.com/amites/3718961
+import sys
+import math
+
+
 def center_geolocation(geolocations):
     """
     Provide a relatively accurate center lat, lon returned as a list pair, given
@@ -56,7 +61,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument("located_ingredients", help="List of ingredients + tab sep. GPS coordinates lat,long")
 args = parser.parse_args()
 
-K = 3
+K = 30
+MIN_SUPPORT = 0.1
+MAX_STEPS = 50
+CHANGE_THRESHOLD=.05
 
 def radius(area):
     """:param area: km2"""
@@ -76,16 +84,79 @@ codes_2 = {
     "ADM5": radius(600)
 }
 
+count = 0
 for line in open(args.located_ingredients):
     fields = line.strip().split("\t")
+    if len(fields) < 2:
+        continue
     ingredient = fields[0]
-    l = []
+    locations = []
+
 
     # Process and convert degrees to
     for coordinates in fields[1:]:
         lat, long, code1, code2 = coordinates.split(",")
         lat, long = radians(float(lat)), radians(float(long))
-        l.append((lat, long))
+        locations.append((lat, long))
 
-    k = min(K, len(coordinates))
-    centers = range(K)
+    nb_clusters = math.trunc(min(K, len(coordinates), float(len(coordinates)/MIN_SUPPORT)))
+
+    clusters = [random.randint(0, nb_clusters-1) for i in range(len(locations))]
+
+    for step in range(MAX_STEPS):
+        # Recompute centers
+        # print("+++ Computing centers")
+
+        centers = [[] for k in range(nb_clusters)]
+        counts = [0 for k in range(nb_clusters)]
+        for m in range(len(locations)):
+            # print(m, clusters[m], locations[m], centers[clusters[m]])
+            centers[clusters[m]].append(locations[m])
+
+        for k in range(nb_clusters):
+            if len(centers[k]) == 0:
+                centers[k] = None
+            elif len(centers[k]) == 1:
+                centers[k] = centers[k][0]
+            elif len(centers[k]) > 1:
+                centers[k] = center_geolocation(centers[k])
+
+
+        # Assign clusters to locations
+        changes = 0
+        for m in range(len(locations)):
+            loc = locations[m]
+            mindist = sys.float_info.max
+            argmin = 0
+            for k in range(nb_clusters):
+                center = centers[k]
+                if center is None:
+                    continue
+                # print(loc, center)
+                d = geocalc(loc[0], loc[1], center[0], center[1])
+                # print("d(%s,cluster %s) = %f" % (m, k, d))
+                if d < mindist:
+                    argmin = k
+                    mindist = d
+            if clusters[m] != argmin:
+                changes += 1
+            clusters[m] = argmin
+            counts[argmin] += 1
+
+
+        # print("===")
+        # print(step, changes, centers, clusters)
+        if float(changes) / float(len(coordinates)) < CHANGE_THRESHOLD:
+            break
+
+    for k in range(len(centers)):
+        center = centers[k]
+        if center is not None:
+            if counts[k] / float(len(locations)) >= MIN_SUPPORT:
+                print("INSERT INTO Geo VALUES('%s', POINT(%f, %f));" % (ingredient.replace("'", "''"),
+                                                                        degrees(center[1]),
+                                                                        degrees(center[0])))
+
+    count += 1
+    if count % 100 == 0:
+        logger.info("Processed %d items", count)

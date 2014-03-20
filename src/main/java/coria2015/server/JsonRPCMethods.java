@@ -346,13 +346,18 @@ public class JsonRPCMethods extends HttpServlet {
         // Requete
 
         String jsonData = "[";
+<<<<<<< .merge_file_TpOEIa
         String query = "select ingredients,st_distance(p, point("+latClick+","+lngClick+")) as d, asText(p) as point from Geo where st_distance(p, point(\"+latClick+\",\"+lngClick+\"))> 0 order by (d) limit 25 ;";
+=======
+        String query = "select ingredients,st_distance(p, point("+latClick+","+lngClick+")) as d, asText(p) as point from Geo where st_distance(p, point(\"+latClick+\",\"+lngClick+\"))<3;";
+>>>>>>> .merge_file_EkR83b
 
         ResultSet rs = exec(query);
         try {
           if (rs != null) while (rs.next()) {
 
              String p =  rs.getString(3);
+<<<<<<< .merge_file_TpOEIa
               String p1 = p.replaceAll("POINT\\(","");
               String p2 = p1.replaceAll("\\)","");
               //System.out.println(p2);
@@ -360,6 +365,14 @@ public class JsonRPCMethods extends HttpServlet {
               String[] split = p2.split(" ");
               String latRes = split[0];
               String lngRes = split[1];
+=======
+              p.replace("POINT(","");
+              p.replace(")","");
+
+              String[] split = p.split(" ");
+              String latRes = split[1];
+              String lngRes = split[0];
+>>>>>>> .merge_file_EkR83b
 
               // {"label":"paella","img":"json/img/paella.jpg","distance":2000,"lat":41.3833,"lng":2.1833}
               jsonData += "{";
@@ -383,9 +396,14 @@ public class JsonRPCMethods extends HttpServlet {
 
         String fakeResult = "[{\"label\":\"paella\",\"img\":\"json/img/paella.jpg\",\"distance\":2000,\"lat\":41.3833,\"lng\":2.1833},{\"label\":\"choucroute\",\"img\":\"json/img/choucroute.jpg\",\"distance\":1000,\"lat\":48.583333,\"lng\":7.75},{\"label\":\"tajine\",\"img\":\"json/img/tajine.jpg\",\"distance\":500000,\"lat\":32.54681,\"lng\":4.3}]";
 
+<<<<<<< .merge_file_TpOEIa
         System.out.println(jsonData);
         return jsonData;
        // return fakeResult;
+=======
+       // return jsonData;
+        return fakeResult;
+>>>>>>> .merge_file_EkR83b
     }
 
 
